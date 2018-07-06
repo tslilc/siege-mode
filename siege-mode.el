@@ -1,4 +1,4 @@
-;;; Package --- Surround region with smart delimeters interactively
+;;; Package --- Surround region with smart delimiters interactively
 ;; Time-stamp: <2018-07-05 21:19:22 (tslil)>
 
 ;; Copyright (c) 2018 tslil clingman
@@ -26,8 +26,8 @@
 ;; Lay siege to the region from all sides!
 ;; 
 ;; When the region is active, all input is redirected to the minibuffer and
-;; treated as a delimeter for the region. By default the input is used as the
-;; left delimeter from which the right one is derived using
+;; treated as a delimiter for the region. By default the input is used as the
+;; left delimiter from which the right one is derived using
 ;; `siege-left-to-right-regexs'. This may be reversed by default
 ;; (`siege-default-left') or during usage via "C-c r" in the minibuffer. If
 ;; regexes are not desired they may be disabled via "C-c a" in the minibuffer
@@ -49,7 +49,7 @@
                                          ("left" . "right")
                                          ("langle" . "rangle")
                                          ("begin" . "end") )
-  "List of pairs (REGEX . REPLACE) used to generate the RIGHT delimeter from \
+  "List of pairs (REGEX . REPLACE) used to generate the RIGHT delimiter from \
 the LEFT one. The list is traversed in order and every substitution is applied."
   :group 'siege-mode
   :type '(repeat (cons string string)))
@@ -63,19 +63,19 @@ the LEFT one. The list is traversed in order and every substitution is applied."
                                          ("right" . "left")
                                          ("rangle" . "langle")
                                          ("end" . "begin") )
-  "List of pairs (REGEX . REPLACE) used to generate the LEFT delimeter from \
+  "List of pairs (REGEX . REPLACE) used to generate the LEFT delimiter from \
 the RIGHT one. The list is traversed in order and every substitution is applied."
   :group 'siege-mode
   :type '(repeat (cons string string)))
 
 (defcustom siege-default-left t
-  "Whether siege mode should default to deriving the right delimeter \
+  "Whether siege mode should default to deriving the right delimiter \
 from the input."
   :group 'siege-mode
   :type 'bool)
 
 (defcustom siege-default-apply-regexs t
-  "Whether siege mode should default to deriving the matching delimeter \
+  "Whether siege mode should default to deriving the matching delimiter \
 from the input using the regexs given in `siege-right-to-left-regexs' \
 and `siege-left-to-right-regexs'."
   :group 'siege-mode
@@ -83,7 +83,7 @@ and `siege-left-to-right-regexs'."
 
 
 (defface siege-preview-face '((t :inherit (warning)))
-  "Face in which to render delimeter previews for Siege mode."
+  "Face in which to render delimiter previews for Siege mode."
   :group 'siege-mode)
 
 (defvar siege--overlay nil)
@@ -93,16 +93,16 @@ and `siege-left-to-right-regexs'."
 (defvar siege--hist '())
 
 (defun siege--toggle-end ()
-  "Swap the side for which the input is considered a delimeter and \
-from which the matching delimeter is derived, for \
+  "Swap the side for which the input is considered a delimiter and \
+from which the matching delimiter is derived, for \
 the currently running instance. See also `siege-default-left'."
   (interactive)
   (setq siege--is-left (not siege--is-left))
-  (minibuffer-message "Currently entering %s delimeter."
+  (minibuffer-message "Currently entering %s delimiter."
                       (if siege--is-left "LEFT" "RIGHT")))
 
 (defun siege--toggle-regex ()
-  "Toggle the use of regexs in deriving a matching delimeter for \
+  "Toggle the use of regexs in deriving a matching delimiter for \
 the currently running instance. See also `siege-default-apply-regexs'."
   (interactive)
   (setq siege--apply-regexs (not siege--apply-regexs))
@@ -110,7 +110,7 @@ the currently running instance. See also `siege-default-apply-regexs'."
                       (if siege--apply-regexs "APPLYING" "NOT applying")))
 
 (defun siege--matching-pair (input)
-  "Generate a matching delimeter from INPUT using \
+  "Generate a matching delimiter from INPUT using \
 `siege-left-to-right-regexs' and `siege-right-to-left-regexs' \
 according to \
 `siege-default-left' and `siege-default-apply-regexs'"
@@ -126,7 +126,7 @@ according to \
     (cons input input)))
 
 (defun siege--preview-input ()
-  "Render the siege delimeters in the buffer using overlays."
+  "Render the siege delimiters in the buffer using overlays."
   (let ((inp (minibuffer-contents)))
     (if (string-blank-p inp)
         (siege--preview-end)
@@ -157,7 +157,7 @@ according to \
     map))
 
 (defun siege--interactive (initial)
-  "Use to enter the interactive delimeter building for region.
+  "Use to enter the interactive delimiter building for region.
 
 INITIAL is the string present in the minibuffer, which is not necessarily\
 the default value."
@@ -174,7 +174,7 @@ the default value."
                        (add-hook 'post-command-hook #'siege--preview-input nil t)
                        (add-hook 'minibuffer-exit-hook #'siege--preview-end nil t)
                        (siege--preview-input))
-                   (read-from-minibuffer (format "Enter delimeter (default %s): " default)
+                   (read-from-minibuffer (format "Enter delimiter (default %s): " default)
                                          initial siege-minibuffer-map
                                          nil 'siege--hist default)))
          (pair (siege--matching-pair result)))
@@ -188,8 +188,8 @@ the default value."
   "This function replaces `self-insert-command'.
 
 When the region is active, all input is redirected to the minibuffer \
-and treated as a delimeter for the region. By default the input \
-is used as the left delimeter from which the right one is \
+and treated as a delimiter for the region. By default the input \
+is used as the left delimiter from which the right one is \
 derived using `siege-left-to-right-regexs'. See also \
 `siege-default-left' and `siege-right-to-left-regexs'. ARG is \
 ignored.

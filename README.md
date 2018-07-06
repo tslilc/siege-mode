@@ -6,8 +6,8 @@ interactively.
 ### (with the power of regular expressions)
 
 When the region is active, all input is redirected to the minibuffer
-and treated as a delimeter for the region. By default the input is
-used as the left delimeter from which the right one is derived using
+and treated as a delimiter for the region. By default the input is
+used as the left delimiter from which the right one is derived using
 `siege-left-to-right-regexs`. This may be reversed by default
 (`siege-default-left`) or during usage via "C-c r" in the minibuffer.
 If regexes are not desired they may be disabled via "C-c a" in the
