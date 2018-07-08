@@ -1,7 +1,9 @@
 # siege-mode
 An emacs minor mode to surround the region with smart delimiters interactively.
 
-## Lay siege to the region from all sides!
+![siege-mode.gif](siege-mode.gif)
+
+## Lay siege to the region from both sides!
 ### (with the power of regular expressions)
 
 When the region is active, all input is redirected to the minibuffer and treated
@@ -12,16 +14,14 @@ not desired they may be disabled via "C-c a" in the minibuffer or by default
 (`siege-default-derive`).
 
 All changes are dynamically displayed in the buffer (see `siege-preview-face`)
-and may be committed by "SPC" or "Ret" in the minibuffer.
+and may be committed by "Ret" in the minibuffer. It is also possible to commit
+the input on "space" as set by `siege-default-end-on-space` and toggled by 
+"C-c s" in the minibuffer.
 
 By default siege-mode understands the usual delimeter pairs, as well as latex
 LaTeX begin/end pairs and left/right pairs. Moreover, for ease of use it will
 pair both `_{` and `^{` with `}` by default.
 
-## Fancy GIF demo
-
-![siege-mode.gif](siege-mode.gif)
-
 ## License
 
-GPL v3 or later.
+GPL v3+

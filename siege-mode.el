@@ -1,5 +1,5 @@
 ;;; Package --- Surround region with smart delimiters interactively
-;; Time-stamp: <2018-07-07 23:46:55 (tslil)>
+;; Time-stamp: <2018-07-08 14:37:21 (tslil)>
 
 ;; Copyright (c) 2018 tslil clingman
 
@@ -23,7 +23,7 @@
 
 ;;; Commentary:
 
-;; Lay siege to the region from all sides!
+;; Lay siege to the region from both sides!
 ;; 
 ;; When the region is active, all input is redirected to the minibuffer and
 ;; treated as a delimiter for the region. The input is used as the left
@@ -33,8 +33,9 @@
 ;; minibuffer or by default (`siege-default-derive').
 ;;
 ;; All changes are dynamically displayed in the buffer (see
-;; `siege-preview-face') and may be committed by "SPC" or "Ret" in the
-;; minibuffer.
+;; `siege-preview-face') and may be committed by "Ret" in the minibuffer. It is
+;; also possible to commit the input on "space" as set by
+;; `siege-default-end-on-space' and toggled by "C-c s" in the minibuffer.
 ;;
 ;; By default siege-mode understands the usual delimeter pairs, as well as latex
 ;; LaTeX begin/end pairs and left/right pairs. Moreover, for ease of use it will
@@ -62,10 +63,12 @@ the left one. The list is traversed in order and every substitution is applied."
 (defcustom siege-boundary-list '("\\\\left\\\\{"
                                  "\\\\left[({<\\[]"
                                  "[_^]?{"
-                                 "[([<`*_/ ]" )
+                                 "\\Sw" )
   "List of regexes giving tokens at which the input delimiter should be split \
-so that the resulting substrings may be transformed. See \
-`siege--tokenize-non-block' for details."
+so that the resulting substrings may be transformed. Note that these are used \
+as regex alternative in order and so it is recommended that the last element \
+is a catch-all for generic tokenization. By default it is \\Sw to break on any \
+non-word tokens. See `siege--tokenize-non-block' for details on tokenisation."
   :group 'siege-mode
   :type '(list string))
 
@@ -97,6 +100,12 @@ from the input or reproduce it on both sides verbatim."
   :group 'siege-mode
   :type 'bool)
 
+(defcustom siege-default-end-on-space nil
+  "Whether siege-mode should, by default, interpret a space entered in the \
+delimiter as marking the end of input (like return)."
+  :group 'siege-mode
+  :type 'bool)
+
 (defface siege-preview-face '((t :inherit (warning)))
   "Face in which to render delimiter previews for Siege mode."
   :group 'siege-mode)
@@ -105,6 +114,7 @@ from the input or reproduce it on both sides verbatim."
 (defvar siege--selected-window nil)
 (defvar siege--derive t)
 (defvar siege--boundary "")
+(defvar siege--end-on-space nil)
 (defvar siege--hist '())
 
 (defun siege--toggle-derive ()
@@ -114,6 +124,27 @@ the currently running instance. See also `siege-default-derive'."
   (setq siege--derive (not siege--derive))
   (minibuffer-message "%s right delimeter."
                       (if siege--derive "DERIVING" "NOT deriving")))
+
+(defun siege--toggle-space ()
+  "Toggle whether pressing space in the minibuffer confirms marks the end of \
+the input stream. See `siege-default-end-on-space'."
+  (interactive)
+  (setq siege--end-on-space (not siege--end-on-space))
+  (minibuffer-message "Space entry %s input"
+                      (if siege--end-on-space "part of" "ends")))
+
+(defun siege--handle-space ()
+  (interactive)
+  "Handle spc input in the minibuffer according to session toggle. See also \
+`siege-default-end-on-space'."
+  (if siege--end-on-space (exit-minibuffer) (insert " ")))
+
+(defvar siege-minibuffer-map
+  (let ((map minibuffer-local-map))
+    (define-key map (kbd "SPC") 'siege--handle-space)
+    (define-key map (kbd "C-c a") 'siege--toggle-derive)
+    (define-key map (kbd "C-c s") 'siege--toggle-space)
+    map))
 
 (defun siege--extract-next-block (string start open-chr close-chr
                                          prefix-match)
@@ -261,11 +292,6 @@ by regex optional match strings (\\|)"
   (with-selected-window siege--selected-window
     (remove-overlays (buffer-end -1) (buffer-end 1) 'sieging t)))
 
-(defvar siege-minibuffer-map
-  (let ((map minibuffer-local-ns-map))
-    (define-key map (kbd "C-c a") 'siege--toggle-derive)
-    map))
-
 (defun siege--interactive (initial)
   "Use to enter the interactive delimiter building for region.
 
@@ -274,6 +300,7 @@ the default value."
   (barf-if-buffer-read-only)
   (setq siege--selected-window (selected-window)
         siege--derive siege-default-derive
+        siege--end-on-space siege-default-end-on-space
         siege--boundary (siege--make-boundary-regex-from-list
                          siege-boundary-list))
   (let* ((start (region-beginning))
