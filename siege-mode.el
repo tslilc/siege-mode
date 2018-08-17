@@ -1,12 +1,15 @@
-;;; Package --- Surround region with smart delimiters interactively
-;; Time-stamp: <2018-07-10 18:33:54 (tslil)>
+;;; siege-mode.el --- Surround region with smart delimiters interactively
 
 ;; Copyright (c) 2018 tslil clingman
 
 ;; Author: tslil clingman <tslil@posteo.de>
 ;; Version: 2.2
+;; Package-Version: 20180710.1841
 ;; Package-Requires: ((emacs "24.4"))
-;; Keywords: region wrap
+;; URL: https://github.com/tslilc/siege-mode
+;; Keywords: convenience region wrap
+
+;; This file is NOT part of GNU Emacs.
 
 ;;; License:
 
@@ -24,7 +27,7 @@
 ;;; Commentary:
 
 ;; Lay siege to the region from both sides!
-;; 
+;;
 ;; When the region is active, most input* is redirected to the minibuffer and
 ;; treated as a delimiter for the region. The input is used as the left
 ;; delimiter from which the right one is derived using `siege-transform-regexs'

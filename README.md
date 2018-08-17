@@ -16,12 +16,22 @@ by calling `siege-explicit-call`, bound to "M-s M-s".
 
 All changes are dynamically displayed in the buffer (see `siege-preview-face`)
 and may be committed by "Ret" in the minibuffer. It is also possible to commit
-the input on "space" as set by `siege-default-end-on-space` and toggled by 
+the input on "space" as set by `siege-default-end-on-space` and toggled by
 "C-c s" in the minibuffer.
 
 By default siege-mode understands the usual delimeter pairs, as well as latex
 LaTeX begin/end pairs and left/right pairs. Moreover, for ease of use it will
 pair both `_{` and `^{` with `}` by default.
+
+## Installation
+
+To install the package, you use [quelpa-use-package](https://github.com/quelpa/quelpa-use-package/)
+
+```elisp
+  (use-package siege-mode
+    :ensure quelpa
+    :quelpa (siege-mode :repo "tslilc/siege-mode" :fetcher github))
+```
 
 ## License
 
